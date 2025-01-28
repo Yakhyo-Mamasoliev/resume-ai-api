@@ -1,23 +1,7 @@
-const express = require("express");
 const axios = require("axios");
-const cors = require("cors");
-const dotenv = require("dotenv");
+const delay = require("../utils/delay");
 
-// Load environment variables
-dotenv.config();
-
-const app = express();
-const port = process.env.PORT || 3000;
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Delay function for retries
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// API endpoint to analyze resumes
-app.post("/api/analyze-resume", async (req, res) => {
+const analyzeResume = async (req, res) => {
 	const { resumeText } = req.body;
 
 	if (!resumeText) {
@@ -32,7 +16,7 @@ app.post("/api/analyze-resume", async (req, res) => {
 			response = await axios.post(
 				"https://api-inference.huggingface.co/models/gpt2",
 				{
-					inputs: `Analyze this resume and suggest improvements: ${resumeText}`,
+					inputs: `Please review and suggest improvements for this resume:\n\n${resumeText}`,
 				},
 				{
 					headers: {
@@ -45,10 +29,10 @@ app.post("/api/analyze-resume", async (req, res) => {
 				console.log(
 					`Model loading, retrying in ${response.data.estimated_time} seconds...`
 				);
-				await delay(response.data.estimated_time * 1000); // Wait for the estimated time
+				await delay(response.data.estimated_time * 1000);
 				retries--;
 			} else {
-				break; // Exit loop if no 503
+				break;
 			}
 		}
 
@@ -61,20 +45,11 @@ app.post("/api/analyze-resume", async (req, res) => {
 		}
 	} catch (error) {
 		console.error("Hugging Face API Error:", error.message);
-
 		res.status(500).json({
 			error: error.message,
 			details: error.response?.data || "AI analysis failed",
 		});
 	}
-});
+};
 
-// Test route to check server status
-app.get("/", (req, res) => {
-	res.send("Resume AI API is running...");
-});
-
-// Start server
-app.listen(port, () => {
-	console.log(`Server running on http://localhost:${port}`);
-});
+module.exports = { analyzeResume };
