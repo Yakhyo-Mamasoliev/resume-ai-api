@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -19,6 +20,12 @@ app.use("/api", resumeRoutes);
 // Test route to check server status
 app.get("/", (req, res) => {
 	res.send("Resume AI API is running...");
+});
+
+// Global error handling middleware
+app.use((err, req, res, next) => {
+	console.error(err.stack);
+	res.status(500).json({ error: "Something went wrong!" });
 });
 
 // Start server

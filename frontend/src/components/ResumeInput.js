@@ -8,7 +8,7 @@ const ResumeInput = ({ setAnalysisResult }) => {
 		e.preventDefault();
 		try {
 			const response = await api.post("/analyze-resume", { resumeText });
-			setAnalysisResult(response.data.analysis);
+			setAnalysisResult(response.data); // Set the structured result
 		} catch (error) {
 			console.error("Error analyzing resume:", error);
 		}

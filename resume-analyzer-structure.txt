@@ -1,0 +1,28 @@
+project-root/
+├── backend/
+│   ├── server.js
+│   ├── routes/
+│   │   └── resumeRoutes.js
+│   ├── controllers/
+│   │   └── resumeController.js
+│   ├── middlewares/
+│   │   └── errorHandler.js
+│   ├── utils/
+│   │   └── delay.js
+│   ├── .env
+│   ├── package.json
+│   └── README.md
+├── frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ResumeInput.js
+│   │   │   └── AnalysisResult.js
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   ├── App.css
+│   │   └── api.js
+│   ├── package.json
+│   └── README.md
+├── README.md

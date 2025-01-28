@@ -9,45 +9,37 @@ const analyzeResume = async (req, res) => {
 	}
 
 	try {
-		let retries = 3; // Number of retry attempts
-		let response;
+		// TextRazor API endpoint and your API key
+		const apiKey = process.env.TEXTRAZOR_API_KEY; // Store your API key securely in the .env file
+		const url = "https://api.textrazor.com/";
 
-		while (retries > 0) {
-			response = await axios.post(
-				"https://api-inference.huggingface.co/models/gpt2",
-				{
-					inputs: `Please review and suggest improvements for this resume:\n\n${resumeText}`,
+		const response = await axios.post(
+			url,
+			{
+				// Parameters to be sent in the request
+				text: resumeText,
+				extractors: ["entities", "keywords", "topics"], // You can extract entities, keywords, and topics
+			},
+			{
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+					"X-TextRazor-Key": apiKey, // Your API Key
 				},
-				{
-					headers: {
-						Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-					},
-				}
-			);
-
-			if (response.status === 503 && response.data?.estimated_time) {
-				console.log(
-					`Model loading, retrying in ${response.data.estimated_time} seconds...`
-				);
-				await delay(response.data.estimated_time * 1000);
-				retries--;
-			} else {
-				break;
 			}
-		}
+		);
 
-		if (response.data && response.data[0]?.generated_text) {
-			res.json({ analysis: response.data[0].generated_text });
+		if (response.data && response.data.response) {
+			res.json({ analysis: response.data.response });
 		} else {
 			res
 				.status(500)
-				.json({ error: "Unexpected response from Hugging Face API" });
+				.json({ error: "Failed to analyze resume with TextRazor" });
 		}
 	} catch (error) {
-		console.error("Hugging Face API Error:", error.message);
+		console.error("TextRazor API Error:", error.message);
 		res.status(500).json({
 			error: error.message,
-			details: error.response?.data || "AI analysis failed",
+			details: error.response?.data || "Text analysis failed",
 		});
 	}
 };

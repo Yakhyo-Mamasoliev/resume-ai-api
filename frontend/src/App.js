@@ -3,7 +3,7 @@ import ResumeInput from "./components/ResumeInput";
 import AnalysisResult from "./components/AnalysisResult";
 
 const App = () => {
-	const [analysisResult, setAnalysisResult] = useState("");
+	const [analysisResult, setAnalysisResult] = useState(null); // Store the result in state
 
 	return (
 		<div>
